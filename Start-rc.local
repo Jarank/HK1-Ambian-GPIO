@@ -1,0 +1,31 @@
+In recent versions of Ubuntu running in Windows Subsystem for Linux (WSL), the /etc/rc.local script is not executed at boot time by default, because it has been replaced by systemd. However, you can still enable /etc/rc.local by following these steps:
+
+Create a file named /etc/systemd/system/rc-local.service with the following contents:
+
+makefile
+-----------------------------------------------------------------
+[Unit]
+Description=/etc/rc.local Compatibility
+ConditionPathExists=/etc/rc.local
+
+[Service]
+Type=forking
+ExecStart=/etc/rc.local start
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target
+
+----------------------------------------------------------------------
+Create a file named /etc/rc.local with the commands you want to run at boot time. Make sure the file is executable by running the command chmod +x /etc/rc.local.
+
+Enable the rc-local.service unit by running the command:
+
+bash
+
+sudo systemctl enable rc-local.service
+Start the rc-local.service unit by running the command:
+sudo systemctl start rc-local.service
